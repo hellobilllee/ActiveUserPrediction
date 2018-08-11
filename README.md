@@ -287,7 +287,7 @@ def count_occurence(x, span):
             occu += count_dict.get(i)
     return occu
 ```
-span为你想要统计的某个区间。更多特征提取函数详见github[（https://github.com/hellobilllee/ActiveUserPrediction/blob/master/lgbpy/lgb_v16.py)](http://note.youdao.com/)
+span为你想要统计的某个区间。更多特征提取函数详见github[（https://github.com/hellobilllee/ActiveUserPrediction/blob/master/dataprocess/)](http://note.youdao.com/)
 6. 提取每一个page，action比例单独做特征，page-action,action-page交互特征，详间数据处理函数（这里面有一些骚操作）
 
 #### 写在后面
