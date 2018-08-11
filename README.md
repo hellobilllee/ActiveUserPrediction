@@ -35,7 +35,7 @@ df_user_register.sample(10)
 ```python
 >des_user_register= df_user_register.describe(include="all")
 ```
-![image](F:\ActiveUserPrediction\photos\describe.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/photos/describe.JPG)
 
 可以看出注册时间为30天，即一个月数据，注册类型有12种，设备类型有一千多种。注意对于类别性特征，读取数据时需要将该特征的dtype显示设置为str，然后describe()中参数include设置为all，就可以分别得到类别型和数值型特征的统计信息了。以下为读取注册日志代码：
 ```python
