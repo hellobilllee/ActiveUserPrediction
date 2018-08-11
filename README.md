@@ -30,12 +30,12 @@
 ```
 df_user_register.sample(10)
 ```
-![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/sample.JPG)
+![ScreenShot](photos/sample.JPG)
 使用pandas 的describe()函数了解数据基本统计信息了。如：
 ```python
 >des_user_register= df_user_register.describe(include="all")
 ```
-![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/describe.JPG)
+![ScreenShot](photos/describe.JPG)
 
 可以看出注册时间为30天，即一个月数据，注册类型有12种，设备类型有一千多种。注意对于类别性特征，读取数据时需要将该特征的dtype显示设置为str，然后describe()中参数include设置为all，就可以分别得到类别型和数值型特征的统计信息了。以下为读取注册日志代码：
 ```python
@@ -56,7 +56,7 @@ df_user_register.sample(10)
 ```
 df_user_register['register_day'].value_counts()
 ```
-![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/value_count.JPG)
+![ScreenShot](photos/value_count.JPG)
 
 推荐使用seaborn进行更加可视化分析：
 
