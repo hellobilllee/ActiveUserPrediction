@@ -68,9 +68,9 @@ seaborn.countplot(x='register_day', data=df_user_register)
 ![ScreenShot](photos/registerday_count.JPG)
 
 或者：
-plt.figure(figsize=(12,5))
 
 ```
+plt.figure(figsize=(12,5))
 plt.title("Distribution of register day")
 ax = sns.distplot(df_user_register["register_day"],bins=30)
 ```
