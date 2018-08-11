@@ -30,12 +30,12 @@
 ```
 df_user_register.sample(10)
 ```
-![image](F:\ActiveUserPrediction\photos\sample.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/sample.JPG)
 使用pandas 的describe()函数了解数据基本统计信息了。如：
 ```python
 >des_user_register= df_user_register.describe(include="all")
 ```
-![image](https://github.com/hellobilllee/ActiveUserPrediction/photos/describe.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/describe.JPG)
 
 可以看出注册时间为30天，即一个月数据，注册类型有12种，设备类型有一千多种。注意对于类别性特征，读取数据时需要将该特征的dtype显示设置为str，然后describe()中参数include设置为all，就可以分别得到类别型和数值型特征的统计信息了。以下为读取注册日志代码：
 ```python
@@ -56,14 +56,14 @@ df_user_register.sample(10)
 ```
 df_user_register['register_day'].value_counts()
 ```
-![image](F:\ActiveUserPrediction\photos\value_count.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/value_count.JPG)
 
 推荐使用seaborn进行更加可视化分析：
 
 ```
 seaborn.countplot(x='register_day', data=df_user_register)
 ```
-![image](F:\ActiveUserPrediction\photos\registerday_count.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/registerday_count.JPG)
 或者：
 plt.figure(figsize=(12,5))
 
@@ -71,38 +71,38 @@ plt.figure(figsize=(12,5))
 plt.title("Distribution of register day")
 ax = sns.distplot(df_user_register["register_day"],bins=30)
 ```
-![image](F:\ActiveUserPrediction\photos\count2.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/count2.JPG)
 可以发现6，7；13，14；21，22，23，24；27，28；这几天注册用户规律性突增，初步判定两天的为周末，21，22，23为小长假，24数据异常增多，有可能有问题，那么可以对24号这一天的数据进行专门分析。
 
 ```
 sns.countplot(x='register_type', data=df_user_register[df_user_register["register_day"]==24])
 ```
-![image](F:\ActiveUserPrediction\photos\24count.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/24count.JPG)
 可以发现，这一天注册类型为3的用户激增，为了验证确实如此，我们可以看看23号的情况。
 
 ```
 sns.countplot(x='register_type', data=df_user_register[df_user_register["register_day"]==23])
 ```
-![image](F:\ActiveUserPrediction\photos\23count.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/23count.JPG)
 看一看16号的情况：
 
 ```
 sns.countplot(x='register_type', data=df_user_register[df_user_register["register_day"]==16])
 ```
-![image](F:\ActiveUserPrediction\photos\16count.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/16count.JPG)
 基本可以判定，24号这一天，注册类型为3的这部分用户有问题，我们可以抓住这个点进一步分析，看看24号这一天，注册类型为3的用户都使用了那些设备类型。
 
 ```
 df_user_register[(df_user_register["register_day"]==24)&(df_user_register["register_type"]==3)]["device_type"].value_counts()
 ```
-![image](F:\ActiveUserPrediction\photos\24count3.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/24count3.JPG)
 
 可以发现，24号，注册类型3，设备类型为1，10566，3036的注册用户数异常的多，我们看看23号的数据来验证我们的想法。
 
 ```
 df_user_register[(df_user_register["register_day"]==23)&(df_user_register["register_type"]==3)]["device_type"].value_counts()
 ```
-![image](F:\ActiveUserPrediction\photos\23count3.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/23count3.JPG)
 
 可以发现，注册设备类型分布是比较均匀的，没有出现特别多的设备号，所以基本可以判定24号，注册类型3，设备类型为1，10566，3036的注册用户为异常用户。为了进一步验证这部分用户是否活跃，将这部分数据单独提取出来
 
@@ -114,7 +114,7 @@ print(len(user_outliers))
 ```
 df_app_launch[(df_app_launch["user_id"].isin(user_outliers))&(df_app_launch["app_launch_day"]>24)]
 ```
-![image](F:\ActiveUserPrediction\photos\outlier1.JPG)
+![image](https://github.com/hellobilllee/ActiveUserPrediction/tree/master/photos/outlier1.JPG)
 
 可以发现，24号之后，这部分用户就不再出现，基本可以判定这部分用户为僵尸用户。我在初赛时单独将这部分用户提交到线上进行过验证，评估结果出现division by zero error，说明precision和recall都为0,即这些用户都是非活跃用户，导致线上计算时出现bug. 确定这部分用户为非活跃用户后，可以在测试时过滤掉这部分用户，然后在提交时将这部分用户活跃概率置零进行合并提交。
 
@@ -129,7 +129,7 @@ df_app_launch[(df_app_launch["user_id"].isin(user_outliers))&(df_app_launch["app
 
 &emsp;&emsp;我一开始尝试使用规则来做，简单的限定了最后1，2，3，4，5天的活动次数，竟然能够在A榜取得0.815成绩，最初这个成绩在稳居前100以内，而程序运行时间不过几秒钟。所以最初我觉得这个比赛应该是算法+规则取胜，就像中文分词里面，CRF，HMM， Perceptron， LSTM+CRF等等，分词算法一堆，但实际生产环境中还是能用词典就用词典．
 
-&emsp;&emsp;所以我中期每次都是将算法得出的结果跟规则得出的结果进行合并提交，但是中期算法效果不行，所以这么尝试了一段时间后我还是将重心转到算法这块来了。后来我想了想，觉得在这个比赛里面，简单规则能够解决的问题，算法难道不能解决吗？基于树的模型不就是一堆规则吗？算法应该是能够学习到这些规则的，关键是如何将自己构造规则的思路转化为特征。这么一想之后，我开始着手将我用到的规则全部转化为特征，包括最后1，2...10天活动的天数、次数、频率以及窗口中前10,11,12,13,14天活动的rate和day_rate信息，还有后3,5,7,9,11天的gap（活动平均间隔),var，day_var信息，last_day_activity(最近一次活动时间)等等，对app_launch.log和video_create.log可以进行相似操作取特征（具体见GitHub代码（https://github.com/hellobilllee/ActiveUserPrediction/blob/master/dataprocesspy/)）。这些特征的重要性在后期的特征选择过程中都是排名非常靠前的特征，其中gap特征是最强特。
+&emsp;&emsp;所以我中期每次都是将算法得出的结果跟规则得出的结果进行合并提交，但是中期算法效果不行，所以这么尝试了一段时间后我还是将重心转到算法这块来了。后来我想了想，觉得在这个比赛里面，简单规则能够解决的问题，算法难道不能解决吗？基于树的模型不就是一堆规则吗？算法应该是能够学习到这些规则的，关键是如何将自己构造规则的思路转化为特征。这么一想之后，我开始着手将我用到的规则全部转化为特征，包括最后1，2...10天活动的天数、次数、频率以及窗口中前10,11,12,13,14天活动的rate和day_rate信息，还有后3,5,7,9,11天的gap（活动平均间隔),var，day_var信息，last_day_activity(最近一次活动时间)等等，对app_launch.log和video_create.log可以进行相似操作取特征（具体见GitHub代码（https://github.com/hellobilllee/ActiveUserPrediction/blob/master/dataprocesspy/）。这些特征的重要性在后期的特征选择过程中都是排名非常靠前的特征，其中gap特征是最强特。
 
 &emsp;&emsp;为了处理窗口大小不一致的问题，可以另外构造一套带windows权重的特征(spatial_invariant)；为了处理统一窗口中不同用户注册时间长短不一问题，可以再构造一套带register_time权重的特征(temporal_invariant)；将以上空间和时间同时考虑，可以另外构造一套temporal-spatial_invariant的特征。这套特征构造完后，基本上能够保证A榜0.819以上。B榜我摒弃了带spatial_invariant的特征，因为发现还是固定窗口取特征效果较好，因此temporal-spatial_invariant的特征也不用构造了。后期我又根据众多时序函数（具体可以参考tsfresh[(https://github.com/blue-yonder/tsfresh)](http://note.youdao.com/)这个开源的时序特征构造工具）构造了很多时序特征，因为原始十个特征中4个为时间特征，所以时序特征的构造非常丰富，包括峰值，趋势，能量，自相关性等等很多时序相关性特征。但我感觉这里我也引入了一些噪声特征，这给后期的特征选择带来了一些困难。
 
