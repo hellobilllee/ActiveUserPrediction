@@ -66,6 +66,7 @@ df_user_register['register_day'].value_counts()
 seaborn.countplot(x='register_day', data=df_user_register)
 ```
 ![ScreenShot](photos/registerday_count.JPG)
+
 或者：
 plt.figure(figsize=(12,5))
 
@@ -135,7 +136,7 @@ df_app_launch[(df_app_launch["user_id"].isin(user_outliers))&(df_app_launch["app
 
 &emsp;&emsp;我一开始尝试使用规则来做，简单的限定了最后1，2，3，4，5天的活动次数，竟然能够在A榜取得0.815成绩，最初这个成绩在稳居前100以内，而程序运行时间不过几秒钟。所以最初我觉得这个比赛应该是算法+规则取胜，就像中文分词里面，CRF，HMM， Perceptron， LSTM+CRF等等，分词算法一堆，但实际生产环境中还是能用词典就用词典．
 
-&emsp;&emsp;所以我中期每次都是将算法得出的结果跟规则得出的结果进行合并提交，但是中期算法效果不行，所以这么尝试了一段时间后我还是将重心转到算法这块来了。后来我想了想，觉得在这个比赛里面，简单规则能够解决的问题，算法难道不能解决吗？基于树的模型不就是一堆规则吗？算法应该是能够学习到这些规则的，关键是如何将自己构造规则的思路转化为特征。这么一想之后，我开始着手将我用到的规则全部转化为特征，包括最后1，2...10天活动的天数、次数、频率以及窗口中前10,11,12,13,14天活动的rate和day_rate信息，还有后3,5,7,9,11天的gap（活动平均间隔),var，day_var信息，last_day_activity(最近一次活动时间)等等，对app_launch.log和video_create.log可以进行相似操作取特征（具体见GitHub代码（https://github.com/hellobilllee/ActiveUserPrediction/blob/master/dataprocesspy/）。这些特征的重要性在后期的特征选择过程中都是排名非常靠前的特征，其中gap特征是最强特。
+&emsp;&emsp;所以我中期每次都是将算法得出的结果跟规则得出的结果进行合并提交，但是中期算法效果不行，所以这么尝试了一段时间后我还是将重心转到算法这块来了。后来我想了想，觉得在这个比赛里面，简单规则能够解决的问题，算法难道不能解决吗？基于树的模型不就是一堆规则吗？算法应该是能够学习到这些规则的，关键是如何将自己构造规则的思路转化为特征。这么一想之后，我开始着手将我用到的规则全部转化为特征，包括最后1，2...10天活动的天数、次数、频率以及窗口中前10,11,12,13,14天活动的rate和day_rate信息，还有后3,5,7,9,11天的gap（活动平均间隔),var，day_var信息，last_day_activity(最近一次活动时间)等等，对app_launch.log和video_create.log可以进行相似操作取特征（https://github.com/hellobilllee/ActiveUserPrediction/blob/master/dataprocesspy/）。这些特征的重要性在后期的特征选择过程中都是排名非常靠前的特征，其中gap特征是最强特。
 
 &emsp;&emsp;为了处理窗口大小不一致的问题，可以另外构造一套带windows权重的特征(spatial_invariant)；为了处理统一窗口中不同用户注册时间长短不一问题，可以再构造一套带register_time权重的特征(temporal_invariant)；将以上空间和时间同时考虑，可以另外构造一套temporal-spatial_invariant的特征。这套特征构造完后，基本上能够保证A榜0.819以上。B榜我摒弃了带spatial_invariant的特征，因为发现还是固定窗口取特征效果较好，因此temporal-spatial_invariant的特征也不用构造了。后期我又根据众多时序函数（具体可以参考tsfresh[(https://github.com/blue-yonder/tsfresh)](http://note.youdao.com/)这个开源的时序特征构造工具）构造了很多时序特征，因为原始十个特征中4个为时间特征，所以时序特征的构造非常丰富，包括峰值，趋势，能量，自相关性等等很多时序相关性特征。但我感觉这里我也引入了一些噪声特征，这给后期的特征选择带来了一些困难。
 
