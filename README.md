@@ -2,7 +2,7 @@
 
 ---
 
-　　第一次认真参与的机器学习比赛，复赛B榜rank20+,基本为单LGB模型成绩，单LGB有0.91228auc. 前前后后近两个多月，在这个题目上花了不少精力，在此总结分享一下个人经验[（https://github.com/hellobilllee/ActiveUserPrediction)](http://note.youdao.com/)。本分享将会覆盖使用机器学习算法解决实际业务问题的整套流程，包括**数据分析**，**异常值处理**，**特征工程**，**验证集选择**，**特征选择**，**机器学习模型构建**，**模型参数调节**，**模型融**合等，同时我将总结一下机器学习比赛中常见的一些**提分技巧**。最后，针对本次比赛中一些值得注意的问题以及我没有做好的一些问题做一个思考性的总结。希望本篇分享能够给对机器学习感兴趣的广大萌新提供一个比较全面的指南，如果大家有什么不明白的问题或者发现了什么错误或者有想和大家分享的ideas等等，欢迎留言或者email我（[hibilllee@foxmail.com](http://note.youdao.com/)），欢迎机器学习大佬们提出批评意见，一如既往的向大佬们学习。
+　　第一次认真参与的机器学习比赛，复赛B榜rank20+,基本为单LGB模型成绩，单LGB有0.91228auc. 前前后后近两个多月，在这个题目上花了不少精力，在此总结分享一下个人经验[（https://github.com/hellobilllee/ActiveUserPrediction)](http://note.youdao.com/)。本分享将会覆盖使用机器学习算法解决实际业务问题的整套流程，包括**数据分析**，**异常值处理**，**特征工程**，**验证集选择**，**特征选择**，**机器学习模型构建**，**模型参数调节**，**模型融合**等，同时我将总结一下机器学习比赛中常见的一些**提分技巧**。最后，针对本次比赛中一些值得注意的问题以及我没有做好的一些问题做一个思考性的总结。希望本篇分享能够给对机器学习感兴趣的广大萌新提供一个比较全面的指南，如果大家有什么不明白的问题或者发现了什么错误或者有想和大家分享的ideas等等，欢迎留言或者email我（[hibilllee@foxmail.com](http://note.youdao.com/)），欢迎机器学习大佬们提出批评意见，一如既往的向大佬们学习。
 　　
 
 ---
@@ -31,7 +31,8 @@
 df_user_register.sample(10)
 ```
 ![ScreenShot](photos/sample.JPG)
-使用pandas 的describe()函数了解数据基本统计信息了。如：
+
+使用pandas 的describe()函数了解数据基本统计信息。如：
 ```python
 >des_user_register= df_user_register.describe(include="all")
 ```
@@ -43,6 +44,7 @@ df_user_register.sample(10)
 >dtype_user_register = {"user_id": np.uint32, "register_day": np.uint8, "register_type": np.uint8, "device_type": str}
 >df_user_register = pd.read_table("data/user_register_log.txt",header=None,names=user_register_log,index_col=None,dtype=dtype_user_register)
 ```
+
 可以通过groupby()函数深入的了解特征之间的关系，如查看每一天的注册类型情况:
 ```python
 >print(df_user_register.groupby(by=["register_day"，"register_type"]).size())
@@ -72,24 +74,28 @@ plt.title("Distribution of register day")
 ax = sns.distplot(df_user_register["register_day"],bins=30)
 ```
 ![ScreenShot](photos/count2.JPG)
+
 可以发现6，7；13，14；21，22，23，24；27，28；这几天注册用户规律性突增，初步判定两天的为周末，21，22，23为小长假，24数据异常增多，有可能有问题，那么可以对24号这一天的数据进行专门分析。
 
 ```
 sns.countplot(x='register_type', data=df_user_register[df_user_register["register_day"]==24])
 ```
 ![ScreenShot](photos/24count.JPG)
+
 可以发现，这一天注册类型为3的用户激增，为了验证确实如此，我们可以看看23号的情况。
 
 ```
 sns.countplot(x='register_type', data=df_user_register[df_user_register["register_day"]==23])
 ```
 ![ScreenShot](photos/23count.JPG)
+
 看一看16号的情况：
 
 ```
 sns.countplot(x='register_type', data=df_user_register[df_user_register["register_day"]==16])
 ```
 ![ScreenShot](photos/16count.JPG)
+
 基本可以判定，24号这一天，注册类型为3的这部分用户有问题，我们可以抓住这个点进一步分析，看看24号这一天，注册类型为3的用户都使用了那些设备类型。
 
 ```
